@@ -4,7 +4,9 @@ Napoleon Sphinx Documentation - Templates and functions.
 import os
 import os.path
 import logging
+
 logger = logging.getLogger()
+
 
 def gen_template(name, conf_file, template, params):
     """Generate a file from a template, only if the file does not exist."""

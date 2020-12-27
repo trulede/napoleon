@@ -23,46 +23,58 @@ def parse_arguments():
     """Parse arguments and resolve parameters speficied with environment
     variables. Returns an args object."""
     parser = argparse.ArgumentParser(description="Napoleon")
-    parser.add_argument("--git_repo", nargs="?", type=str,
+    parser.add_argument(
+            "--git_repo", nargs="?", type=str,
             default=os.getenv("NAPOLEON_GIT_REPO", None),
             help="Repository to clone.")
-    parser.add_argument("--git_commit", nargs="?", type=str,
+    parser.add_argument(
+            "--git_commit", nargs="?", type=str,
             default=os.getenv("NAPOLEON_GIT_COMMIT", None),
             help="Branch, Tag or Commit SHA to checkout.")
-    parser.add_argument("--repo_dir", nargs="?", type=str,
+    parser.add_argument(
+            "--repo_dir", nargs="?", type=str,
             default=os.getenv("NAPOLEON_REPO_DIR", '/tmp/repo'),
-            help="Directory where the repository is either located or cloned to.")
-    parser.add_argument("--module_dirs", nargs="?", type=str,
+            help="Directory where the repository is located or cloned to.")
+    parser.add_argument(
+            "--module_dirs", nargs="?", type=str,
             default=os.getenv("NAPOLEON_MODULE_DIRS", None),
             help="List of modules to build API Doc, semicolon delimited.")
-    parser.add_argument("--source_dir", nargs="?", type=str,
+    parser.add_argument(
+            "--source_dir", nargs="?", type=str,
             default=os.getenv("NAPOLEON_SOURCE_DIR", 'doc/source'),
             help="Location of the source dir, relative to the repo_dir.")
-    parser.add_argument("--build_dir", nargs="?", type=str,
+    parser.add_argument(
+            "--build_dir", nargs="?", type=str,
             default=os.getenv("NAPOLEON_BUILD_DIR", 'doc/build'),
             help="Location of the build output, relative to the repo_dir.")
 
-    parser.add_argument("--archive_name", nargs="?", type=str,
+    parser.add_argument(
+            "--archive_name", nargs="?", type=str,
             default=os.getenv("NAPOLEON_ARCHIVE_NAME", None),
             help="")
-    parser.add_argument("--push_url", nargs="?", type=str,
+    parser.add_argument(
+            "--push_url", nargs="?", type=str,
             default=os.getenv("NAPOLEON_PUSH_URL", None),
             help="")
-    parser.add_argument("--push_user", nargs="?", type=str,
+    parser.add_argument(
+            "--push_user", nargs="?", type=str,
             default=os.getenv("NAPOLEON_PUSH_USER", None),
             help="")
-    parser.add_argument("--push_token", nargs="?", type=str,
+    parser.add_argument(
+            "--push_token", nargs="?", type=str,
             default=os.getenv("NAPOLEON_PUSH_TOKEN", None),
             help="")
     parser.set_defaults(func=lambda args: parser.print_help())
     return parser.parse_args()
+
 
 def main():
     """Napoleon Sphinx Documentation - main function call."""
     args = parse_arguments()
     # Parameter hash, used for creating templates
     params = {
-        'project': os.getenv("NAPOLEON_PROJECT_NAME", 'Napoleon Sphinx Doc Project'),
+        'project': os.getenv(
+            "NAPOLEON_PROJECT_NAME", 'Napoleon Sphinx Doc Project'),
         'copyright': os.getenv("NAPOLEON_COPYRIGHT", ''),
         'author': os.getenv("NAPOLEON_AUTHOR_NAME", ''),
         'release': '',
@@ -79,7 +91,8 @@ def main():
             logger.info("Checkout Commit : %s", args.git_repo)
             repo.git.checkout(args.git_commit)
         repo_names = repo.remotes.origin.url.split('.git')[0].split('/')[-2:]
-        params['project'] = os.getenv("NAPOLEON_PROJECT_NAME", f'{repo_names[0]}-{repo_names[1]}')
+        params['project'] = os.getenv(
+            "NAPOLEON_PROJECT_NAME", f'{repo_names[0]}-{repo_names[1]}')
         params['release'] = repo.active_branch.name
 
     # Conf file
@@ -98,11 +111,13 @@ def main():
     else:
         args.module_dirs = set()
         args.module_dirs.update(find_packages(where=args.repo_dir))
-        args.module_dirs.update(find_namespace_packages(where=args.repo_dir,
-                exclude=['doc*', 'test*']))
+        args.module_dirs.update(
+                find_namespace_packages(
+                    where=args.repo_dir, exclude=['doc*', 'test*']))
     for module in args.module_dirs:
         logger.info("Call sphinx-apidoc for module : %s", module)
-        cmd = run(args=[
+        cmd = run(
+                args=[
                     'sphinx-apidoc',
                     '-f', '-o', f'{args.source_dir}',
                     f'{module}', ],
@@ -122,12 +137,18 @@ def main():
     # Zip
     if not args.archive_name:
         if args.git_repo:
-            args.archive_name = f"{repo_names[0]}__{repo_names[1]}__{repo.active_branch.name}"
+            args.archive_name = '__'.join([
+                repo_names[0],
+                repo_names[1],
+                repo.active_branch.name,
+            ])
         else:
             args.archive_name = f"{os.path.basename(args.repo_dir)}"
     archive_root_path = os.path.join(args.repo_dir, args.build_dir, 'html')
-    archive_basename = os.path.join(args.repo_dir, args.build_dir, args.archive_name)
-    archive_name = os.path.join(args.repo_dir, args.build_dir, f"{args.archive_name}.zip")
+    archive_basename = os.path.join(
+            args.repo_dir, args.build_dir, args.archive_name)
+    archive_name = os.path.join(
+            args.repo_dir, args.build_dir, f"{args.archive_name}.zip")
     logger.info("Create Archive : %s", archive_name)
     logger.info("   (root path) : %s", archive_root_path)
     make_archive(archive_basename, 'zip', root_dir=archive_root_path)
@@ -137,7 +158,11 @@ def main():
         logger.info("Push File :%s", archive_name)
         logger.info("     URL  : %s", args.push_url)
         with open(archive_name) as file:
-            requests.put(args.push_url, auth=(args.push_user, args.push_token), data=file)
+            requests.put(
+                    args.push_url,
+                    auth=(args.push_user, args.push_token),
+                    data=file)
+
 
 if __name__ == "__main__":
     main()
