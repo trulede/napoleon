@@ -16,17 +16,17 @@ setup(
     description="Sphinx Napoleon Builder",
     url="https://github.com/trulede/napoleon.git",
     packages=find_packages(),
-    python_requires='>=3.8',
+    python_requires=">=3.8",
     install_requires=[
-        'gitpython',
-        'requests',
-        'sphinx',
-        'sphinx-rtd-theme',
+        "gitpython",
+        "requests",
+        "sphinx",
+        "sphinx-rtd-theme",
     ],
     include_package_data=True,
     entry_points={
-        'console_scripts': [
-            'napoleon=napoleon.cli:main',
+        "console_scripts": [
+            "napoleon=napoleon.cli:main",
         ],
     },
 )

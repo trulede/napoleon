@@ -12,10 +12,10 @@ def gen_template(name, conf_file, template, params):
     """Generate a file from a template, only if the file does not exist."""
     if not os.path.isfile(conf_file):
         logger.info("Generating default %s file for Napoleon", name)
-        params['project_ul'] = '='*len(params['project'])
+        params["project_ul"] = "=" * len(params["project"])
         default_conf = template.format(**params)
         os.makedirs(os.path.dirname(conf_file), exist_ok=True)
-        with open(conf_file, 'w') as file:
+        with open(conf_file, "w") as file:
             file.write(default_conf)
 
 
