@@ -1,4 +1,4 @@
-name: Lint Code Base
+name: Super Linter
 
 on:
   push:
@@ -20,9 +20,11 @@ jobs:
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          #VALIDATE_ALL_CODEBASE: false
-          #VALIDATE_PYTHON_PYLINT: true
-          #VALIDATE_PYTHON_FLAKE8: true
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_PYTHON_PYLINT: true
+          VALIDATE_PYTHON_FLAKE8: true
           #VALIDATE_PYTHON_BLACK: true
-          #VALIDATE_PYTHON_ISORT: false
-          #VALIDATE_DOCKERFILE: true
+          VALIDATE_PYTHON_ISORT: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_YAML: true
