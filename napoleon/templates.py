@@ -1,9 +1,9 @@
 """
 Napoleon Sphinx Documentation - Templates and functions.
 """
+import logging
 import os
 import os.path
-import logging
 
 logger = logging.getLogger()
 

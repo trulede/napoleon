@@ -1,18 +1,19 @@
 """
 Napoleon Sphinx Documentation - CLI
 """
-import os
-import os.path
 import argparse
 import logging
-from shutil import rmtree, make_archive
+import os
+import os.path
+from shutil import make_archive, rmtree
 from subprocess import run
-from setuptools import find_packages, find_namespace_packages
-import requests
-import git
-from sphinx.application import Sphinx
-from .templates import gen_template, CONF_DEFAULT, INDEX_DEFAULT
 
+import git
+import requests
+from setuptools import find_namespace_packages, find_packages
+from sphinx.application import Sphinx
+
+from .templates import CONF_DEFAULT, INDEX_DEFAULT, gen_template
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
