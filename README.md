@@ -5,7 +5,7 @@ Napoleon Sphinx Documentation Build Container Image.
 [![Release](https://img.shields.io/github/release/trulede/napoleon.svg?label=Release&logo=github)](https://github.com/trulede/napoleon/releases/latest)
 [![Super Linter](https://img.shields.io/github/workflow/status/trulede/napoleon/Super%20Linter?label=Super%20Linter&logo=github)](https://github.com/trulede/napoleon/actions?workflow=Super%20Linter)
 [![Main CI](https://img.shields.io/github/workflow/status/trulede/napoleon/Main%20CI?label=Main%20CI&logo=github)](https://github.com/trulede/napoleon/actions?workflow=Main%20CI)
-https://img.shields.io/github/license/trulede/napoleon?label=License
+![License](https://img.shields.io/github/license/trulede/napoleon?label=License)
 
 
 ## Overview
