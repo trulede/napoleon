@@ -32,12 +32,14 @@ docker run --env NAPOLEON_GIT_REPO=https://github.com/trulede/sphinx-example.git
 
 ### Layout of Documentation Project
 
-    proj                              REPODIR .. paths relative to this.
-    proj/module                       MODULEDIRS
-    proj/doc/source                   SOURCEDIR
-    proj/doc/source/conf.py           ** generated
-    proj/doc/source/index.rst         ** generated, with modules.
-    proj/doc/build                    BUILDDIR .. the output is under html
+Directory/File | Environment Variable | Description
+-------------- | -------------------- | -----------
+proj | NAPOLEON_REPO_DIR | All paths relative to this.
+proj/module | NAPOLEON_MODULE_DIRS | Modules and Package directories to build API Doc for.
+proj/doc/source | NAPOLEON_SOURCE_DIR | Directory where the conf.py file is located.
+proj/doc/source/conf.py | - | This file is generated if not present.
+proj/doc/source/index.rst | - | This file is generated if conf.py is not present.
+proj/doc/build | NAPOLEON_BUILD_DIR | Build output is placed in this directory (typically under the html subdirectory).
 
 
 ### Sphinx Tools
