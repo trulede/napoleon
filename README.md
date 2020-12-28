@@ -10,20 +10,23 @@ Napoleon Sphinx Documentation Build Container Image.
 
 ### Python Module
 
+```bash
 git clone https://github.com/trulede/napoleon.git
 cd napoleon
 make
 make install
 napoleon --git_repo https://github.com/trulede/sphinx-example.git
+```
 
 ### Docker Container
 
+```bash
 git clone https://github.com/trulede/napoleon.git
 cd napoleon
 make
 make docker
 docker run --env NAPOLEON_GIT_REPO=https://github.com/trulede/sphinx-example.git napoleon:latest
-
+```
 
 ## Details
 
