@@ -2,7 +2,9 @@
 
 Napoleon Sphinx Documentation Build Container Image.
 
-[![GitHub Super-Linter](https://github.com/trulede/napoleon/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Super Linter](https://github.com/trulede/napoleon/workflows/Super%20Linter/badge.svg)]
+[![Main CI](https://github.com/trulede/napoleon/workflows/Main%20CI/badge.svg)]
+
 
 ## Overview
 
