@@ -1,0 +1,28 @@
+name: 'Napoleon'
+description: 'Napoleon Sphinx Documentation Build as a GitHub Action.'
+inputs:
+  repo_dir:
+    description: 'Path of the repo containing the documentation, defaults to GITHUB_WORKSPACE (/github/workspace).'
+    required: false
+  module_dirs:
+    description: 'List of modules to build API Doc, semicolon delimited.'
+    required: false
+  source_dir:
+    description: 'Location of the source dir, relative to the repo_dir.'
+    required: false
+    default: 'doc/source'
+  build_dir:
+    description: 'Location of the build output, relative to the repo_dir.'
+    required: false
+    default: 'doc/build'
+  archive_name:
+    description: 'Name of the archive file.'
+    required: true
+outputs:
+  archive_path:
+    description: 'Workspace relative path to the generated archive file.'
+runs:
+  using: 'docker'
+  image: 'from ghcr'
+  args:
+    - ${{ inputs.who-to-greet }}

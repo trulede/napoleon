@@ -41,28 +41,36 @@ def parse_arguments():
         "--repo_dir",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_REPO_DIR", "/tmp/repo"),
+        default=os.getenv(
+            "NAPOLEON_REPO_DIR",
+            os.getenv("INPUT_REPO_DIR", "/tmp/repo")),
         help="Directory where the repository is located or cloned to.",
     )
     parser.add_argument(
         "--module_dirs",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_MODULE_DIRS", None),
+        default=os.getenv(
+            "NAPOLEON_MODULE_DIRS",
+            os.getenv("INPUT_MODULE_DIRS", None)),
         help="List of modules to build API Doc, semicolon delimited.",
     )
     parser.add_argument(
         "--source_dir",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_SOURCE_DIR", "doc/source"),
+        default=os.getenv(
+            "NAPOLEON_SOURCE_DIR",
+            os.getenv("INPUT_SOURCE_DIR", "doc/source")),
         help="Location of the source dir, relative to the repo_dir.",
     )
     parser.add_argument(
         "--build_dir",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_BUILD_DIR", "doc/build"),
+        default=os.getenv(
+            "NAPOLEON_BUILD_DIR",
+            os.getenv("INPUT_BUILD_DIR", "doc/build")),
         help="Location of the build output, relative to the repo_dir.",
     )
 
@@ -70,7 +78,9 @@ def parse_arguments():
         "--archive_name",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_ARCHIVE_NAME", None),
+        default=os.getenv(
+            "NAPOLEON_ARCHIVE_NAME",
+            os.getenv("INPUT_ARCHIVE_NAME", None)),
         help="",
     )
     parser.add_argument(
@@ -190,6 +200,11 @@ def main():
     logger.info("Create Archive : %s", archive_name)
     logger.info("   (root path) : %s", archive_root_path)
     make_archive(archive_basename, "zip", root_dir=archive_root_path)
+
+    # Output for GitHub Actions, i.e. only when INPUT_ARCHIVE_NAME is set.
+    if os.getenv("INPUT_ARCHIVE_NAME", None):
+        archive_path = os.path.join(args.build_dir, f"{args.archive_name}.zip")
+        print(f"::set-output name=archive_path::archive_path}")
 
     # Push
     if args.push_url:
