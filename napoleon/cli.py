@@ -210,22 +210,22 @@ def main():
         else:
             args.archive_name = f"{os.path.basename(args.repo_dir)}"
     archive_root_path = os.path.join(args.repo_dir, args.build_dir, "html")
-    archive_basename = os.path.join(args.repo_dir, args.build_dir, args.archive_name)
-    logger.info("Create Archive : %s", archive_basename+'.zip')
+    archive_path = os.path.join(args.repo_dir, args.build_dir, f"{args.archive_name}.zip")
+    logger.info("Create Archive : %s", archive_path)
     logger.info("   (root path) : %s", archive_root_path)
-    make_archive(archive_basename, "zip", root_dir=archive_root_path)
+    make_archive(os.path.splitext(archive_path)[0], "zip", root_dir=archive_root_path)
 
     # Output for GitHub Actions, i.e. only when INPUT_ARCHIVE_NAME is set.
     if os.getenv("INPUT_ARCHIVE_NAME", None):
         # Path is relative to the mapped in repo path (INPUT_REPO_DIR).
-        archive_path = os.path.join(args.build_dir, f"{args.archive_name}.zip")
-        print(f"::set-output name=archive_path::{archive_path}")
+        archive__relpath = os.path.join(args.build_dir, f"{args.archive_name}.zip")
+        print(f"::set-output name=archive_path::{archive__relpath}")
 
     # Push
     if args.push_url:
-        logger.info("Push File :%s", archive_name)
+        logger.info("Push File :%s", archive_path)
         logger.info("     URL  : %s", args.push_url)
-        with open(archive_name) as file:
+        with open(archive_path) as file:
             requests.put(
                 args.push_url, auth=(args.push_user, args.push_token), data=file
             )
