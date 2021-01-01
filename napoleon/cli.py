@@ -24,9 +24,31 @@ def get_env(envar_list, default=None):
     strings as None."""
     for _ in envar_list:
         value = os.getenv(_, None)
-        if value: # Only return on non-empty strings.
+        if value:  # Only return on non-empty strings.
             return value
     return default
+
+
+def calculate_archive_name(args, repo):
+    """Resolve the archive_name, as best as possible."""
+    if args.archive_name:
+        # Trim any .zip, it gets added later.
+        (root, ext) = os.path.splitext(args.archive_name)
+        if ext.lower() == ".zip":
+            args.archive_name = root
+    else:
+        # Generate a name.
+        if args.git_repo:
+            repo_names = repo.remotes.origin.url.split(".git")[0].split("/")[-2:]
+            args.archive_name = "__".join(
+                [
+                    repo_names[0],
+                    repo_names[1],
+                    repo.active_branch.name,
+                ]
+            )
+        else:
+            args.archive_name = f"{os.path.basename(args.repo_dir)}"
 
 
 def parse_arguments():
@@ -126,6 +148,7 @@ def parse_arguments():
 
 def main():
     """Napoleon Sphinx Documentation - main function call."""
+    repo = None
     args = parse_arguments()
     logger.info("Napoleon Sphinx Documentation, with arguments:")
     for arg, val in vars(args).items():
@@ -202,23 +225,7 @@ def main():
     build.build()
 
     # Zip
-    if args.archive_name:
-        # Trim any .zip, it gets added later.
-        (root, ext) = os.path.splitext(args.archive_name)
-        if ext.lower() == ".zip":
-            args.archive_name = root
-    else:
-        # Generate a name.
-        if args.git_repo:
-            args.archive_name = "__".join(
-                [
-                    repo_names[0],
-                    repo_names[1],
-                    repo.active_branch.name,
-                ]
-            )
-        else:
-            args.archive_name = f"{os.path.basename(args.repo_dir)}"
+    calculate_archive_name(args, repo)
     archive_root_path = os.path.join(args.repo_dir, args.build_dir, "html")
     archive_path = os.path.join(
         args.repo_dir, args.build_dir, f"{args.archive_name}.zip")

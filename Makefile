@@ -16,7 +16,8 @@ push:
 	docker push localhost:32000/napoleon:latest
 
 lint:
-	pylint napoleon
+	-pylint napoleon
+	-flake8 napoleon
 
 clean:
 	rm -rf ./dist
