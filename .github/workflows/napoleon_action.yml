@@ -1,0 +1,18 @@
+name: Napoleon Action
+  workflow_dispatch:
+
+jobs:
+  action_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Doc Build
+        uses: ./ 
+        id: doc_build
+        with:
+          archive_name: 'foobar'
+
+      - name: Location of Build Artifact
+        run: echo "Build Artifact : ${{ steps.doc_build.outputs.archive_path }}"
