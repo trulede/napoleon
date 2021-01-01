@@ -151,11 +151,12 @@ def main():
     if args.module_dirs:
         args.module_dirs = set(args.module_dirs.split(";"))
     else:
+        exclude = ["doc*", "test*", "build*", "dist*", "wheel*"]
         args.module_dirs = set()
-        args.module_dirs.update(find_packages(where=args.repo_dir))
         args.module_dirs.update(
-            find_namespace_packages(where=args.repo_dir, exclude=["doc*", "test*"])
-        )
+            find_packages(where=args.repo_dir, exclude=exclude))
+        args.module_dirs.update(
+            find_namespace_packages(where=args.repo_dir, exclude=exclude))
     for module in args.module_dirs:
         logger.info("Call sphinx-apidoc for module : %s", module)
         cmd = run(
