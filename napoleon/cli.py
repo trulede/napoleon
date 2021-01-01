@@ -212,7 +212,7 @@ def main():
             capture_output=True,
             check=False,
         )
-        logger.info("\n%s", cmd.stdout.decode().strip())
+        print(cmd.stdout.decode().strip())
 
     # Build
     build = Sphinx(
