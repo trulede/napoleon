@@ -19,10 +19,10 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_env(vars, default=None):
+def get_env(envar_list, default=None):
     """Gets Environment Variables, according to priority, and treats empty
     strings as None."""
-    for _ in vars:
+    for _ in envar_list:
         value = os.getenv(_, None)
         if value: # Only return on non-empty strings.
             return value
@@ -128,8 +128,8 @@ def main():
     """Napoleon Sphinx Documentation - main function call."""
     args = parse_arguments()
     logger.info("Napoleon Sphinx Documentation, with arguments:")
-    for k,v in vars(args).items():
-        logger.info("  %s=%s:", k, v)
+    for arg, val in vars(args).items():
+        logger.info("  %s=%s:", arg, val)
 
     # Parameter hash, used for creating templates
     params = {
@@ -139,19 +139,6 @@ def main():
         "release": "",
         "repo_dir": args.repo_dir,
     }
-
-    # FIXME remove after test .. debug code to check env handling
-    logger.info("ENV :")
-    cmd = [
-        "pwd",
-        "env",
-        "ls -l /tmp",
-        "ls -l /github",
-        "ls -l /github/workspace",
-    ]
-    for c in cmd:
-        result = run(c.split(" "), check=False, capture_output=True)
-        print(result.stdout.decode().strip())
 
     # Clone
     if args.git_repo:
@@ -202,7 +189,7 @@ def main():
             capture_output=True,
             check=False,
         )
-        print(cmd.stdout.decode().strip())
+        logger.info("\n%s", cmd.stdout.decode().strip())
 
     # Build
     build = Sphinx(
