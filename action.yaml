@@ -23,6 +23,4 @@ outputs:
     description: 'Workspace relative path to the generated archive file.'
 runs:
   using: 'docker'
-  image: 'from ghcr'
-  args:
-    - ${{ inputs.who-to-greet }}
+  image: 'ghcr.io/trulede/napoleon:latest'
