@@ -41,28 +41,38 @@ def parse_arguments():
         "--repo_dir",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_REPO_DIR", "/tmp/repo"),
+        default=os.getenv(
+            "NAPOLEON_REPO_DIR",
+            os.getenv(
+                "INPUT_REPO_DIR",
+                os.getenv("GITHUB_WORKSPACE", "/tmp/repo"))),
         help="Directory where the repository is located or cloned to.",
     )
     parser.add_argument(
         "--module_dirs",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_MODULE_DIRS", None),
+        default=os.getenv(
+            "NAPOLEON_MODULE_DIRS",
+            os.getenv("INPUT_MODULE_DIRS", None)),
         help="List of modules to build API Doc, semicolon delimited.",
     )
     parser.add_argument(
         "--source_dir",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_SOURCE_DIR", "doc/source"),
+        default=os.getenv(
+            "NAPOLEON_SOURCE_DIR",
+            os.getenv("INPUT_SOURCE_DIR", "doc/source")),
         help="Location of the source dir, relative to the repo_dir.",
     )
     parser.add_argument(
         "--build_dir",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_BUILD_DIR", "doc/build"),
+        default=os.getenv(
+            "NAPOLEON_BUILD_DIR",
+            os.getenv("INPUT_BUILD_DIR", "doc/build")),
         help="Location of the build output, relative to the repo_dir.",
     )
 
@@ -70,7 +80,9 @@ def parse_arguments():
         "--archive_name",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_ARCHIVE_NAME", None),
+        default=os.getenv(
+            "NAPOLEON_ARCHIVE_NAME",
+            os.getenv("INPUT_ARCHIVE_NAME", None)),
         help="",
     )
     parser.add_argument(
@@ -110,6 +122,19 @@ def main():
         "repo_dir": args.repo_dir,
     }
 
+    # FIXME remove after test .. debug code to check env handling
+    logger.info("ENV :")
+    cmd = [
+        "pwd",
+        "env",
+        "ls -l /tmp",
+        "ls -l /github",
+        "ls -l /github/workspace",
+    ]
+    for c in cmd:
+        result = run(c.split(" "), check=False, capture_output=True)
+        print(result.stdout.decode().strip())
+
     # Clone
     if args.git_repo:
         logger.info("Clone from Git Repo : %s", args.git_repo)
@@ -139,11 +164,12 @@ def main():
     if args.module_dirs:
         args.module_dirs = set(args.module_dirs.split(";"))
     else:
+        exclude = ["doc*", "test*", "build*", "dist*", "wheel*"]
         args.module_dirs = set()
-        args.module_dirs.update(find_packages(where=args.repo_dir))
         args.module_dirs.update(
-            find_namespace_packages(where=args.repo_dir, exclude=["doc*", "test*"])
-        )
+            find_packages(where=args.repo_dir, exclude=exclude))
+        args.module_dirs.update(
+            find_namespace_packages(where=args.repo_dir, exclude=exclude))
     for module in args.module_dirs:
         logger.info("Call sphinx-apidoc for module : %s", module)
         cmd = run(
@@ -171,7 +197,13 @@ def main():
     build.build()
 
     # Zip
-    if not args.archive_name:
+    if args.archive_name:
+        # Trim any .zip, it gets added later.
+        (root, ext) = os.path.splitext(args.archive_name)
+        if ext.lower() == ".zip":
+            args.archive_name = root
+    else:
+        # Generate a name.
         if args.git_repo:
             args.archive_name = "__".join(
                 [
@@ -183,19 +215,23 @@ def main():
         else:
             args.archive_name = f"{os.path.basename(args.repo_dir)}"
     archive_root_path = os.path.join(args.repo_dir, args.build_dir, "html")
-    archive_basename = os.path.join(args.repo_dir, args.build_dir, args.archive_name)
-    archive_name = os.path.join(
-        args.repo_dir, args.build_dir, f"{args.archive_name}.zip"
-    )
-    logger.info("Create Archive : %s", archive_name)
+    archive_path = os.path.join(
+        args.repo_dir, args.build_dir, f"{args.archive_name}.zip")
+    logger.info("Create Archive : %s", archive_path)
     logger.info("   (root path) : %s", archive_root_path)
-    make_archive(archive_basename, "zip", root_dir=archive_root_path)
+    make_archive(os.path.splitext(archive_path)[0], "zip", root_dir=archive_root_path)
+
+    # Output for GitHub Actions, i.e. only when INPUT_ARCHIVE_NAME is set.
+    if os.getenv("INPUT_ARCHIVE_NAME", None):
+        # Path is relative to the mapped in repo path (INPUT_REPO_DIR).
+        archive__relpath = os.path.join(args.build_dir, f"{args.archive_name}.zip")
+        print(f"::set-output name=archive_path::{archive__relpath}")
 
     # Push
     if args.push_url:
-        logger.info("Push File :%s", archive_name)
+        logger.info("Push File :%s", archive_path)
         logger.info("     URL  : %s", args.push_url)
-        with open(archive_name) as file:
+        with open(archive_path) as file:
             requests.put(
                 args.push_url, auth=(args.push_user, args.push_token), data=file
             )
