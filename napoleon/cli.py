@@ -122,6 +122,14 @@ def main():
         "repo_dir": args.repo_dir,
     }
 
+    # FIXME remove after test .. debug code to check env handling
+    logger.info("ENV :")
+    print(run("pwd".split(" "), check=False, capture_output=True).stdout.decode().strip())
+    print(run("env".split(" "), check=False, capture_output=True).stdout.decode().strip())
+    print(run("ls -l /tmp".split(" "), check=False, capture_output=True).stdout.decode().strip())
+    print(run("ls -l /github".split(" "), check=False, capture_output=True).stdout.decode().strip())
+    print(run("ls -l /github/workspace".split(" "), check=False, capture_output=True).stdout.decode().strip())
+
     # Clone
     if args.git_repo:
         logger.info("Clone from Git Repo : %s", args.git_repo)
