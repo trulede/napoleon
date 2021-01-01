@@ -124,7 +124,7 @@ def main():
 
     # FIXME remove after test .. debug code to check env handling
     logger.info("ENV :")
-    cmd =  [
+    cmd = [
         "pwd",
         "env",
         "ls -l /tmp",
@@ -134,7 +134,7 @@ def main():
     for c in cmd:
         result = run(c.split(" "), check=False, capture_output=True)
         print(result.stdout.decode().strip())
-        
+
     # Clone
     if args.git_repo:
         logger.info("Clone from Git Repo : %s", args.git_repo)
@@ -215,7 +215,8 @@ def main():
         else:
             args.archive_name = f"{os.path.basename(args.repo_dir)}"
     archive_root_path = os.path.join(args.repo_dir, args.build_dir, "html")
-    archive_path = os.path.join(args.repo_dir, args.build_dir, f"{args.archive_name}.zip")
+    archive_path = os.path.join(
+        args.repo_dir, args.build_dir, f"{args.archive_name}.zip")
     logger.info("Create Archive : %s", archive_path)
     logger.info("   (root path) : %s", archive_root_path)
     make_archive(os.path.splitext(archive_path)[0], "zip", root_dir=archive_root_path)
