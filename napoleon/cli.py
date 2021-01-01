@@ -113,6 +113,10 @@ def parse_arguments():
 def main():
     """Napoleon Sphinx Documentation - main function call."""
     args = parse_arguments()
+    logger.info("Napoleon Sphinx Documentation, with arguments:")
+    for k,v in vars(args):
+        logger.info("  %s=%s:", k, v)
+
     # Parameter hash, used for creating templates
     params = {
         "project": os.getenv("NAPOLEON_PROJECT_NAME", "Napoleon Sphinx Doc Project"),
