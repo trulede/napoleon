@@ -19,6 +19,16 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def get_env(vars, default=None):
+    """Gets Environment Variables, according to priority, and treats empty
+    strings as None."""
+    for _ in vars:
+        value = os.getenv(_, None)
+        if value: # Only return on non-empty strings.
+            return value
+    return default
+
+
 def parse_arguments():
     """Parse arguments and resolve parameters speficied with environment
     variables. Returns an args object."""
@@ -27,52 +37,55 @@ def parse_arguments():
         "--git_repo",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_GIT_REPO", None),
+        default=get_env(["NAPOLEON_GIT_REPO"], None),
         help="Repository to clone.",
     )
     parser.add_argument(
         "--git_commit",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_GIT_COMMIT", None),
+        default=get_env(["NAPOLEON_GIT_COMMIT"], None),
         help="Branch, Tag or Commit SHA to checkout.",
     )
     parser.add_argument(
         "--repo_dir",
         nargs="?",
         type=str,
-        default=os.getenv(
+        default=get_env([
             "NAPOLEON_REPO_DIR",
-            os.getenv(
-                "INPUT_REPO_DIR",
-                os.getenv("GITHUB_WORKSPACE", "/tmp/repo"))),
+            "INPUT_REPO_DIR",
+            "GITHUB_WORKSPACE",
+        ], "/tmp/repo"),
         help="Directory where the repository is located or cloned to.",
     )
     parser.add_argument(
         "--module_dirs",
         nargs="?",
         type=str,
-        default=os.getenv(
+        default=get_env([
             "NAPOLEON_MODULE_DIRS",
-            os.getenv("INPUT_MODULE_DIRS", None)),
+            "INPUT_MODULE_DIRS",
+        ], None),
         help="List of modules to build API Doc, semicolon delimited.",
     )
     parser.add_argument(
         "--source_dir",
         nargs="?",
         type=str,
-        default=os.getenv(
+        default=get_env([
             "NAPOLEON_SOURCE_DIR",
-            os.getenv("INPUT_SOURCE_DIR", "doc/source")),
+            "INPUT_SOURCE_DIR",
+        ], "doc/source"),
         help="Location of the source dir, relative to the repo_dir.",
     )
     parser.add_argument(
         "--build_dir",
         nargs="?",
         type=str,
-        default=os.getenv(
+        default=get_env([
             "NAPOLEON_BUILD_DIR",
-            os.getenv("INPUT_BUILD_DIR", "doc/build")),
+            "INPUT_BUILD_DIR",
+        ], "doc/build"),
         help="Location of the build output, relative to the repo_dir.",
     )
 
@@ -80,30 +93,31 @@ def parse_arguments():
         "--archive_name",
         nargs="?",
         type=str,
-        default=os.getenv(
+        default=get_env([
             "NAPOLEON_ARCHIVE_NAME",
-            os.getenv("INPUT_ARCHIVE_NAME", None)),
+            "INPUT_ARCHIVE_NAME",
+        ], None),
         help="",
     )
     parser.add_argument(
         "--push_url",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_PUSH_URL", None),
+        default=get_env("NAPOLEON_PUSH_URL", None),
         help="",
     )
     parser.add_argument(
         "--push_user",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_PUSH_USER", None),
+        default=get_env("NAPOLEON_PUSH_USER", None),
         help="",
     )
     parser.add_argument(
         "--push_token",
         nargs="?",
         type=str,
-        default=os.getenv("NAPOLEON_PUSH_TOKEN", None),
+        default=get_env("NAPOLEON_PUSH_TOKEN", None),
         help="",
     )
     parser.set_defaults(func=lambda args: parser.print_help())
