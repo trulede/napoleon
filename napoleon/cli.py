@@ -43,7 +43,9 @@ def parse_arguments():
         type=str,
         default=os.getenv(
             "NAPOLEON_REPO_DIR",
-            os.getenv("INPUT_REPO_DIR", "/tmp/repo")),
+            os.getenv(
+                "INPUT_REPO_DIR",
+                os.getenv("GITHUB_WORKSPACE", "/tmp/repo"))),
         help="Directory where the repository is located or cloned to.",
     )
     parser.add_argument(
